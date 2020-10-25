@@ -1,6 +1,33 @@
 // make a DOM Element to contain the list of issues
 var issueContainerEl = document.querySelector("#issues-container");
 
+// make a DOM Element to reference the div that will house the limit warning div
+var limitWarningEl = document.querySelector("#limit-warning");
+
+
+
+// Display Warning
+var displayWarning = function(repo) 
+{
+    // add text to warning container
+    limitWarningEl.textContent = "To see more than 30 issues, visit ";
+
+    // make a dynamic Link Element that is an anchor <a>
+    var linkEl = document.createElement("a");
+    // make the test of the link element tell user to go to github.com
+    linkEl.textContent = "See More Issues on GitHub.com";
+    // make the href of the link element the url to the github repo in question
+    linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+    // set target to "_blank" to ensure clicking the link opens a new page
+    linkEl.setAttribute("target", "_blank");
+
+    // append to warning container
+    limitWarningEl.appendChild(linkEl);
+};
+
+
+
+
 // Display Issues
 var displayIssues = function(issues) 
 {
@@ -85,6 +112,12 @@ var getRepoIssues = function(repo)
                     {
                         // pass response data object array to dom function
                         displayIssues(data);
+
+                        // check if api has paginated issues (more than 1 page of issues)
+                        if (response.headers.get("Link")) 
+                        {
+                            displayWarning(repo);
+                        }
                     }
                 );
             }   
