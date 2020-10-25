@@ -87,30 +87,43 @@ var getUserRepos = function(user)
     var apiUrl = "https://api.github.com/users/" + user + "/repos";
   
     // make a request to the url then...
-    fetch(apiUrl).then
+    fetch(apiUrl)
+    .then
     (
-        // call a function that uses the fetch response ans a parameter
+        // call a function using the fetch response as a parameter
         function(response) 
         {
-            // if the response is ok (in the 200's)
+            // request was successful (status code in the 200's)
             if (response.ok) 
             {
-                // first parse the response using json() then...
-                response.json().then
+                // parse the response with json()
+                response.json()
+                // then
+                .then
                 (
-                    // call a function using the fetch call's data as a parameter
+                    // call a function using the data from the fetch as a parameter
                     function(data) 
                     {
                         // call the Display Repos function, passing the data object array and user value
                         displayRepos(data, user);
                     }
-                );
-            } 
-            // else, make a window alert tell the user the status text of the response
+            )   ;
+            }    
+            // if request was unsuccessful (status code not in the 200's)
             else 
             {
+                // make an error message pop up showing the status text of the response
                 alert("Error: " + response.statusText);
             }
+        }
+    )
+    // add this catch() function to catch connectivity errors
+    .catch
+    (
+        function(error) 
+        {
+            // Notice this `.catch()` getting chained onto the end of the `.then()` method
+            alert("Unable to connect to GitHub");
         }
     );
 };
