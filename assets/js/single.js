@@ -4,6 +4,37 @@ var issueContainerEl = document.querySelector("#issues-container");
 // make a DOM Element to reference the div that will house the limit warning div
 var limitWarningEl = document.querySelector("#limit-warning");
 
+// make a DOM element for the span in the header that will contain the repo name
+var repoNameEl = document.querySelector("#repo-name");
+
+
+
+// Get Repo Name
+var getRepoName = function()
+{
+    // use the location object to get the query parameter from the URL
+    var queryString = document.location.search;
+    // this is saying to get the string in the [1] position of the split array, 
+    // which is the text coming after the "=" sign
+    var repoName = queryString.split("=")[1];
+
+    // if repoName exists
+    if(repoName) 
+    {
+        // put the repo name in the span in the header
+        repoNameEl.textContent = repoName;
+        // get repo issues for the repo passed in the query parameter
+        getRepoIssues(repoName);
+    }
+    else 
+    {
+        // go back to the main page
+        document.location.replace("./index.html");
+    }
+}
+
+
+
 
 
 // Display Warning
@@ -37,7 +68,6 @@ var displayIssues = function(issues)
         issueContainerEl.textContent = "This repo has no open issues!";
         return;
     }
-    
     
     // for each issue in the data object array:
     for (var i = 0; i < issues.length; i++) 
@@ -123,10 +153,11 @@ var getRepoIssues = function(repo)
             }   
             else 
             {
-                alert("There was a problem with your request!");
+                // if API call was unsuccessful, return to homepage
+                document.location.replace("./index.html");
             }
         }
     );
 };
-  
-getRepoIssues("facebook/react");
+
+getRepoName();
