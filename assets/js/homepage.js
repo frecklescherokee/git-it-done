@@ -3,6 +3,19 @@ var nameInputEl = document.querySelector("#username");
 var repoContainerEl = document.querySelector("#repos-container");
 var repoSearchTerm = document.querySelector("#repo-search-term");
 
+// create a querey selector not for each button, but for the div containing all 3 buttons
+var languageButtonsEl = document.querySelector("#language-buttons");
+
+
+
+
+
+
+
+
+
+
+
 // Display Repos
 var displayRepos = function(repos, searchTerm) 
 {
@@ -63,6 +76,63 @@ var displayRepos = function(repos, searchTerm)
         repoContainerEl.appendChild(repoEl);
     }
 };
+
+// Get Featured Repos
+var getFeaturedRepos = function(language) {
+    // create the URL to query the API endpoint looking for the entered language and the attribute
+    // is:featured
+    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
+    console.log("Made it into the Get Featured Repos function with " + language + " language.");
+    //debugger;
+
+    // fetch the API data then...
+    fetch(apiUrl)
+    .then
+    (
+        // make a function using the fetch's response
+        function(response) 
+        {
+            // if the response is valid
+            if (response.ok) 
+            {
+                // parse the response with json() then...
+                response.json()
+                .then
+                (
+                    // make a function with the response.data as a parameter
+                    function(data) 
+                    {
+                        // call the Display Repos function using data.items and language as parameters
+                        displayRepos(data.items, language);
+                    }
+                );
+            } 
+            else 
+            {
+                alert("Error: " + response.statusText);
+            }
+        }
+    );
+};
+
+// Button Click Handler
+var buttonClickHandler =function (event)
+{
+    event.preventDefault();
+    // get the data-language attribute from the button click event
+    var language = event.target.getAttribute("data-language");
+    console.log(language);
+
+    // if the language value is valid
+    if (language) 
+    {
+        // call the Get Featured Repos function with language as a parameter
+        getFeaturedRepos(language);
+      
+        // clear old content
+        repoContainerEl.textContent = "";
+    }
+}
 
 // Form Submit Handler
 var formSubmitHandler = function(event) 
@@ -133,3 +203,6 @@ var getUserRepos = function(user)
   
 // Add a listener to listen for any submit coming from the user form then call the form submit handler
 userFormEl.addEventListener("submit", formSubmitHandler);
+
+// add an event listener for the language buttons which calls the Button Click Handler function
+languageButtonsEl.addEventListener("click", buttonClickHandler);
